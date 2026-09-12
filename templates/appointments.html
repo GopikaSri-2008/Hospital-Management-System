@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointments - WellSpring Hospital</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✚</div>
+
+            <div>
+                <h2>WellSpring</h2>
+                <span>Hospital Management</span>
+            </div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('doctors') }}"
+               class="nav-link">
+                <span class="nav-icon">⚕</span>
+                <span>Doctors</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}"
+               class="nav-link active">
+                <span class="nav-icon">▣</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('billing') }}"
+               class="nav-link">
+                <span class="nav-icon">▤</span>
+                <span>Billing</span>
+            </a>
+
+            <a href="{{ url_for('search') }}"
+               class="nav-link">
+                <span class="nav-icon">⌕</span>
+                <span>Search</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-icon">
+                    A
+                </div>
+
+                <div class="profile-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Appointments</h1>
+                <p>Schedule and manage patient appointments</p>
+            </div>
+
+
+            <div class="topbar-right">
+
+                <a href="{{ url_for('search') }}"
+                   class="top-search">
+                    <span>⌕</span>
+                    <span>Search</span>
+                </a>
+
+                <div class="admin-badge">
+                    <span class="online-dot"></span>
+                    Admin
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             PAGE ACTIONS
+        ========================== -->
+
+        <section class="page-actions">
+
+            <div>
+
+                <h2>Appointment Records</h2>
+
+                <p>
+                    Book, view, edit, cancel and reschedule appointments.
+                </p>
+
+            </div>
+
+
+            <button type="button"
+                    class="primary-btn"
+                    onclick="openAddAppointmentModal()">
+
+                <span>+</span>
+                Book Appointment
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             APPOINTMENT TABLE
+        ========================== -->
+
+        <section class="table-section">
+
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <h2>All Appointments</h2>
+
+                    <span class="record-count">
+                        {{ appointments|length }} records
+                    </span>
+
+                </div>
+
+
+                <div class="table-search">
+
+                    <span>⌕</span>
+
+                    <input type="text"
+                           id="appointmentSearch"
+                           placeholder="Search appointments..."
+                           onkeyup="filterAppointments()">
+
+                </div>
+
+            </div>
+
+
+            {% if appointments %}
+
+            <div class="table-container">
+
+                <table id="appointmentsTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for appointment in appointments %}
+
+                        <tr>
+
+
+                            <!-- ID -->
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ appointment["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT -->
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ appointment["patient_name"][0]|upper }}
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            {{ appointment["patient_name"] }}
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- DOCTOR -->
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar doctor-avatar">
+                                        {{ appointment["doctor_name"][0]|upper }}
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            Dr. {{ appointment["doctor_name"] }}
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+                                {{ appointment["date"] }}
+                            </td>
+
+
+                            <!-- TIME -->
+
+                            <td>
+                                {{ appointment["time"] }}
+                            </td>
+
+
+                            <!-- DEPARTMENT -->
+
+                            <td>
+
+                                <span class="department-badge">
+                                    {{ appointment["department"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                {% if appointment["status"] == "Cancelled" %}
+
+                                <span class="status-badge status-cancelled">
+                                    Cancelled
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge status-scheduled">
+                                    Scheduled
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <div class="action-buttons">
+
+
+                                    <!-- VIEW -->
+
+                                    <button type="button"
+                                            class="icon-btn view-btn"
+                                            title="View"
+                                            onclick='viewAppointment(
+                                                {{ appointment["id"]|tojson }},
+                                                {{ appointment["patient_name"]|tojson }},
+                                                {{ appointment["doctor_name"]|tojson }},
+                                                {{ appointment["date"]|tojson }},
+                                                {{ appointment["time"]|tojson }},
+                                                {{ appointment["department"]|tojson }},
+                                                {{ appointment["reason"]|tojson }},
+                                                {{ appointment["status"]|tojson }}
+                                            )'>
+
+                                        👁
+
+                                    </button>
+
+
+                                    {% if appointment["status"] == "Cancelled" %}
+
+
+                                    <!-- RESCHEDULE CANCELLED APPOINTMENT -->
+
+                                    <button type="button"
+                                            class="icon-btn edit-btn"
+                                            title="Reschedule"
+                                            onclick='rescheduleAppointment(
+                                                {{ appointment["id"]|tojson }},
+                                                {{ appointment["patient_name"]|tojson }},
+                                                {{ appointment["doctor_name"]|tojson }},
+                                                {{ appointment["date"]|tojson }},
+                                                {{ appointment["time"]|tojson }}
+                                            )'>
+
+                                        ↻
+
+                                    </button>
+
+
+                                    {% else %}
+
+
+                                    <!-- EDIT -->
+
+                                    <button type="button"
+                                            class="icon-btn edit-btn"
+                                            title="Edit"
+                                            onclick='editAppointment(
+                                                {{ appointment["id"]|tojson }},
+                                                {{ appointment["patient_name"]|tojson }},
+                                                {{ appointment["doctor_name"]|tojson }},
+                                                {{ appointment["date"]|tojson }},
+                                                {{ appointment["time"]|tojson }},
+                                                {{ appointment["department"]|tojson }},
+                                                {{ appointment["reason"]|tojson }}
+                                            )'>
+
+                                        ✎
+
+                                    </button>
+
+
+                                    <!-- CANCEL -->
+
+                                    <button type="button"
+                                            class="icon-btn cancel-btn"
+                                            title="Cancel Appointment"
+                                            onclick='confirmCancelAppointment(
+                                                {{ appointment["id"]|tojson }},
+                                                {{ appointment["patient_name"]|tojson }}
+                                            )'>
+
+                                        ×
+
+                                    </button>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ▣
+                </div>
+
+                <h3>No appointments found</h3>
+
+                <p>
+                    Book your first appointment to get started.
+                </p>
+
+                <button type="button"
+                        class="primary-btn"
+                        onclick="openAddAppointmentModal()">
+
+                    + Book Appointment
+
+                </button>
+
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ==================================================
+     ADD APPOINTMENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="addAppointmentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Book New Appointment</h2>
+
+                <p>
+                    Enter appointment information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeAddAppointmentModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              action="{{ url_for('appointments') }}">
+
+
+            <div class="form-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="form-group">
+
+                    <label for="appointmentPatient">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="appointmentPatient"
+                           name="patient_name"
+                           placeholder="Enter patient name"
+                           required>
+
+                </div>
+
+
+                <!-- DOCTOR -->
+
+                <div class="form-group">
+
+                    <label for="appointmentDoctor">
+                        Doctor Name
+                    </label>
+
+                    <input type="text"
+                           id="appointmentDoctor"
+                           name="doctor_name"
+                           placeholder="Enter doctor name"
+                           required>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="appointmentDate">
+                        Date
+                    </label>
+
+                    <input type="date"
+                           id="appointmentDate"
+                           name="date"
+                           required>
+
+                </div>
+
+
+                <!-- TIME -->
+
+                <div class="form-group">
+
+                    <label for="appointmentTime">
+                        Time
+                    </label>
+
+                    <input type="time"
+                           id="appointmentTime"
+                           name="time"
+                           required>
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="form-group">
+
+                    <label for="appointmentDepartment">
+                        Department
+                    </label>
+
+                    <select id="appointmentDepartment"
+                            name="department"
+                            required>
+
+                        <option value="">
+                            Select department
+                        </option>
+
+                        <option value="General Medicine">
+                            General Medicine
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Orthopedics">
+                            Orthopedics
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="Emergency">
+                            Emergency
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- REASON -->
+
+                <div class="form-group">
+
+                    <label for="appointmentReason">
+                        Reason
+                    </label>
+
+                    <input type="text"
+                           id="appointmentReason"
+                           name="reason"
+                           placeholder="Reason for visit">
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeAddAppointmentModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Book Appointment
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     VIEW APPOINTMENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="viewAppointmentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Appointment Details</h2>
+
+                <p>
+                    Complete appointment information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeViewAppointmentModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="appointment-view-header">
+
+            <div class="large-avatar"
+                 id="viewAppointmentAvatar">
+                P
+            </div>
+
+            <div>
+
+                <h2 id="viewAppointmentPatient">
+                    Patient Name
+                </h2>
+
+                <span class="id-badge"
+                      id="viewAppointmentId">
+                    #1
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span>Doctor</span>
+
+                <strong id="viewAppointmentDoctor">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Department</span>
+
+                <strong id="viewAppointmentDepartment">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Date</span>
+
+                <strong id="viewAppointmentDate">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Time</span>
+
+                <strong id="viewAppointmentTime">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Status</span>
+
+                <strong id="viewAppointmentStatus">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Reason</span>
+
+                <strong id="viewAppointmentReason">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button type="button"
+                    class="secondary-btn"
+                    onclick="closeViewAppointmentModal()">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     EDIT APPOINTMENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="editAppointmentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Edit Appointment</h2>
+
+                <p>
+                    Update appointment information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeEditAppointmentModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              id="editAppointmentForm">
+
+
+            <div class="form-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentPatient">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="editAppointmentPatient"
+                           name="patient_name"
+                           required>
+
+                </div>
+
+
+                <!-- DOCTOR -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentDoctor">
+                        Doctor Name
+                    </label>
+
+                    <input type="text"
+                           id="editAppointmentDoctor"
+                           name="doctor_name"
+                           required>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentDate">
+                        Date
+                    </label>
+
+                    <input type="date"
+                           id="editAppointmentDate"
+                           name="date"
+                           required>
+
+                </div>
+
+
+                <!-- TIME -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentTime">
+                        Time
+                    </label>
+
+                    <input type="time"
+                           id="editAppointmentTime"
+                           name="time"
+                           required>
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentDepartment">
+                        Department
+                    </label>
+
+                    <select id="editAppointmentDepartment"
+                            name="department"
+                            required>
+
+                        <option value="General Medicine">
+                            General Medicine
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Orthopedics">
+                            Orthopedics
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="Emergency">
+                            Emergency
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- REASON -->
+
+                <div class="form-group">
+
+                    <label for="editAppointmentReason">
+                        Reason
+                    </label>
+
+                    <input type="text"
+                           id="editAppointmentReason"
+                           name="reason"
+                           required>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeEditAppointmentModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     RESCHEDULE APPOINTMENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="rescheduleAppointmentModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Reschedule Appointment</h2>
+
+                <p>
+                    Choose a new date and time
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeRescheduleAppointmentModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              id="rescheduleAppointmentForm">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group full-width">
+
+                    <label>
+                        Patient
+                    </label>
+
+                    <input type="text"
+                           id="reschedulePatient"
+                           readonly>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label>
+                        Doctor
+                    </label>
+
+                    <input type="text"
+                           id="rescheduleDoctor"
+                           readonly>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="rescheduleDate">
+                        New Date
+                    </label>
+
+                    <input type="date"
+                           id="rescheduleDate"
+                           name="date"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="rescheduleTime">
+                        New Time
+                    </label>
+
+                    <input type="time"
+                           id="rescheduleTime"
+                           name="time"
+                           required>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeRescheduleAppointmentModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Reschedule
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     CANCEL CONFIRMATION MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="cancelAppointmentModal">
+
+    <div class="modal small-modal">
+
+
+        <div class="confirm-content">
+
+            <div class="confirm-icon">
+                !
+            </div>
+
+            <h2>Cancel Appointment?</h2>
+
+            <p>
+
+                Are you sure you want to cancel the appointment
+                for <strong id="cancelAppointmentPatient"></strong>?
+
+            </p>
+
+            <p class="warning-text">
+                The appointment will remain in the records with
+                Cancelled status.
+            </p>
+
+
+            <form method="POST"
+                  id="cancelAppointmentForm">
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="secondary-btn"
+                            onclick="closeCancelAppointmentModal()">
+                        Keep Appointment
+                    </button>
+
+                    <button type="submit"
+                            class="danger-btn">
+                        Cancel Appointment
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
