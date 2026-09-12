@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Billing - WellSpring Hospital</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✚</div>
+
+            <div>
+                <h2>WellSpring</h2>
+                <span>Hospital Management</span>
+            </div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('doctors') }}"
+               class="nav-link">
+                <span class="nav-icon">⚕</span>
+                <span>Doctors</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}"
+               class="nav-link">
+                <span class="nav-icon">▣</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('billing') }}"
+               class="nav-link active">
+                <span class="nav-icon">▤</span>
+                <span>Billing</span>
+            </a>
+
+            <a href="{{ url_for('search') }}"
+               class="nav-link">
+                <span class="nav-icon">⌕</span>
+                <span>Search</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-icon">
+                    A
+                </div>
+
+                <div class="profile-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Billing</h1>
+                <p>Manage hospital bills and payment records</p>
+            </div>
+
+
+            <div class="topbar-right">
+
+                <a href="{{ url_for('search') }}"
+                   class="top-search">
+                    <span>⌕</span>
+                    <span>Search</span>
+                </a>
+
+                <div class="admin-badge">
+                    <span class="online-dot"></span>
+                    Admin
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             PAGE ACTIONS
+        ========================== -->
+
+        <section class="page-actions">
+
+            <div>
+
+                <h2>Billing Records</h2>
+
+                <p>
+                    Create, view and update patient billing information.
+                </p>
+
+            </div>
+
+
+            <button type="button"
+                    class="primary-btn"
+                    onclick="openAddBillModal()">
+
+                <span>+</span>
+                Create Bill
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             BILLING SUMMARY
+        ========================== -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL BILLS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon appointments-icon">
+                        ▤
+                    </div>
+
+                    <span class="stat-label">
+                        TOTAL BILLS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ total_bills }}
+                </h3>
+
+                <p>
+                    Billing records
+                </p>
+
+            </div>
+
+
+            <!-- PAID BILLS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon patients-icon">
+                        ✓
+                    </div>
+
+                    <span class="stat-label">
+                        PAID BILLS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ paid_bills }}
+                </h3>
+
+                <p>
+                    Successfully paid
+                </p>
+
+            </div>
+
+
+            <!-- UNPAID BILLS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon revenue-icon">
+                        !
+                    </div>
+
+                    <span class="stat-label">
+                        UNPAID BILLS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ unpaid_bills }}
+                </h3>
+
+                <p>
+                    Payment pending
+                </p>
+
+            </div>
+
+
+            <!-- PAID REVENUE -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon doctors-icon">
+                        ₹
+                    </div>
+
+                    <span class="stat-label">
+                        PAID REVENUE
+                    </span>
+
+                </div>
+
+                <h3>
+                    ₹{{ "%.2f"|format(total_revenue) }}
+                </h3>
+
+                <p>
+                    Total paid amount
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BILLING TABLE
+        ========================== -->
+
+        <section class="table-section">
+
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <h2>All Bills</h2>
+
+                    <span class="record-count">
+                        {{ bills|length }} records
+                    </span>
+
+                </div>
+
+
+                <div class="table-search">
+
+                    <span>⌕</span>
+
+                    <input type="text"
+                           id="billingSearch"
+                           placeholder="Search bills..."
+                           onkeyup="filterBilling()">
+
+                </div>
+
+            </div>
+
+
+            {% if bills %}
+
+            <div class="table-container">
+
+                <table id="billingTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Treatment</th>
+                            <th>Amount</th>
+                            <th>Bill Date</th>
+                            <th>Due Date</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for bill in bills %}
+
+                        <tr>
+
+
+                            <!-- ID -->
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ bill["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT -->
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ bill["patient_name"][0]|upper }}
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            {{ bill["patient_name"] }}
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- TREATMENT -->
+
+                            <td>
+                                {{ bill["treatment"] }}
+                            </td>
+
+
+                            <!-- AMOUNT -->
+
+                            <td>
+
+                                <strong class="amount-text">
+                                    ₹{{ "%.2f"|format(bill["amount"] or 0) }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- BILL DATE -->
+
+                            <td>
+                                {{ bill["date"] }}
+                            </td>
+
+
+                            <!-- DUE DATE -->
+
+                            <td>
+                                {{ bill["due_date"] or "-" }}
+                            </td>
+
+
+                            <!-- PAYMENT METHOD -->
+
+                            <td>
+                                {{ bill["payment_method"] }}
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                {% if bill["status"] == "Paid" %}
+
+                                <span class="status-badge status-scheduled">
+                                    Paid
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge status-unpaid">
+                                    Unpaid
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <div class="action-buttons">
+
+
+                                    <!-- VIEW -->
+
+                                    <button type="button"
+                                            class="icon-btn view-btn"
+                                            title="View"
+                                            onclick='viewBill(
+                                                {{ bill["id"]|tojson }},
+                                                {{ bill["patient_name"]|tojson }},
+                                                {{ bill["treatment"]|tojson }},
+                                                {{ bill["amount"]|tojson }},
+                                                {{ bill["date"]|tojson }},
+                                                {{ bill["due_date"]|tojson }},
+                                                {{ bill["payment_method"]|tojson }},
+                                                {{ bill["status"]|tojson }}
+                                            )'>
+
+                                        👁
+
+                                    </button>
+
+
+                                    <!-- EDIT -->
+
+                                    <button type="button"
+                                            class="icon-btn edit-btn"
+                                            title="Edit"
+                                            onclick='editBill(
+                                                {{ bill["id"]|tojson }},
+                                                {{ bill["patient_name"]|tojson }},
+                                                {{ bill["treatment"]|tojson }},
+                                                {{ bill["amount"]|tojson }},
+                                                {{ bill["date"]|tojson }},
+                                                {{ bill["due_date"]|tojson }},
+                                                {{ bill["payment_method"]|tojson }},
+                                                {{ bill["status"]|tojson }}
+                                            )'>
+
+                                        ✎
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ₹
+                </div>
+
+                <h3>No billing records found</h3>
+
+                <p>
+                    Create your first bill to get started.
+                </p>
+
+                <button type="button"
+                        class="primary-btn"
+                        onclick="openAddBillModal()">
+
+                    + Create Bill
+
+                </button>
+
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ==================================================
+     ADD BILL MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="addBillModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Create New Bill</h2>
+
+                <p>
+                    Enter patient billing information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeAddBillModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              action="{{ url_for('billing') }}">
+
+
+            <div class="form-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="form-group">
+
+                    <label for="billPatient">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="billPatient"
+                           name="patient_name"
+                           placeholder="Enter patient name"
+                           required>
+
+                </div>
+
+
+                <!-- TREATMENT -->
+
+                <div class="form-group">
+
+                    <label for="billTreatment">
+                        Treatment
+                    </label>
+
+                    <input type="text"
+                           id="billTreatment"
+                           name="treatment"
+                           placeholder="Enter treatment"
+                           required>
+
+                </div>
+
+
+                <!-- AMOUNT -->
+
+                <div class="form-group">
+
+                    <label for="billAmount">
+                        Amount
+                    </label>
+
+                    <input type="number"
+                           id="billAmount"
+                           name="amount"
+                           placeholder="Enter amount"
+                           min="0"
+                           step="0.01"
+                           required>
+
+                </div>
+
+
+                <!-- BILL DATE -->
+
+                <div class="form-group">
+
+                    <label for="billDate">
+                        Bill Date
+                    </label>
+
+                    <input type="date"
+                           id="billDate"
+                           name="date"
+                           required>
+
+                </div>
+
+
+                <!-- DUE DATE -->
+
+                <div class="form-group">
+
+                    <label for="billDueDate">
+                        Due Date
+                    </label>
+
+                    <input type="date"
+                           id="billDueDate"
+                           name="due_date"
+                           required>
+
+                </div>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <div class="form-group">
+
+                    <label for="billPaymentMethod">
+                        Payment Method
+                    </label>
+
+                    <select id="billPaymentMethod"
+                            name="payment_method"
+                            required>
+
+                        <option value="">
+                            Select payment method
+                        </option>
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                        <option value="UPI">
+                            UPI
+                        </option>
+
+                        <option value="Card">
+                            Card
+                        </option>
+
+                        <option value="Bank Transfer">
+                            Bank Transfer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group full-width">
+
+                    <label for="billStatus">
+                        Status
+                    </label>
+
+                    <select id="billStatus"
+                            name="status"
+                            required>
+
+                        <option value="Unpaid">
+                            Unpaid
+                        </option>
+
+                        <option value="Paid">
+                            Paid
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeAddBillModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Create Bill
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     VIEW BILL MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="viewBillModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Bill Details</h2>
+
+                <p>
+                    Complete billing information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeViewBillModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="appointment-view-header">
+
+            <div class="large-avatar"
+                 id="viewBillAvatar">
+                B
+            </div>
+
+            <div>
+
+                <h2 id="viewBillPatient">
+                    Patient Name
+                </h2>
+
+                <span class="id-badge"
+                      id="viewBillId">
+                    #1
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span>Treatment</span>
+
+                <strong id="viewBillTreatment">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Amount</span>
+
+                <strong id="viewBillAmount">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Bill Date</span>
+
+                <strong id="viewBillDate">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Due Date</span>
+
+                <strong id="viewBillDueDate">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Payment Method</span>
+
+                <strong id="viewBillPaymentMethod">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Status</span>
+
+                <strong id="viewBillStatus">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button type="button"
+                    class="secondary-btn"
+                    onclick="closeViewBillModal()">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     EDIT BILL MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="editBillModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>Edit Bill</h2>
+
+                <p>
+                    Update billing information
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeEditBillModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              id="editBillForm">
+
+
+            <div class="form-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="form-group">
+
+                    <label for="editBillPatient">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="editBillPatient"
+                           name="patient_name"
+                           required>
+
+                </div>
+
+
+                <!-- TREATMENT -->
+
+                <div class="form-group">
+
+                    <label for="editBillTreatment">
+                        Treatment
+                    </label>
+
+                    <input type="text"
+                           id="editBillTreatment"
+                           name="treatment"
+                           required>
+
+                </div>
+
+
+                <!-- AMOUNT -->
+
+                <div class="form-group">
+
+                    <label for="editBillAmount">
+                        Amount
+                    </label>
+
+                    <input type="number"
+                           id="editBillAmount"
+                           name="amount"
+                           min="0"
+                           step="0.01"
+                           required>
+
+                </div>
+
+
+                <!-- BILL DATE -->
+
+                <div class="form-group">
+
+                    <label for="editBillDate">
+                        Bill Date
+                    </label>
+
+                    <input type="date"
+                           id="editBillDate"
+                           name="date"
+                           required>
+
+                </div>
+
+
+                <!-- DUE DATE -->
+
+                <div class="form-group">
+
+                    <label for="editBillDueDate">
+                        Due Date
+                    </label>
+
+                    <input type="date"
+                           id="editBillDueDate"
+                           name="due_date"
+                           required>
+
+                </div>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <div class="form-group">
+
+                    <label for="editBillPaymentMethod">
+                        Payment Method
+                    </label>
+
+                    <select id="editBillPaymentMethod"
+                            name="payment_method"
+                            required>
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                        <option value="UPI">
+                            UPI
+                        </option>
+
+                        <option value="Card">
+                            Card
+                        </option>
+
+                        <option value="Bank Transfer">
+                            Bank Transfer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group full-width">
+
+                    <label for="editBillStatus">
+                        Status
+                    </label>
+
+                    <select id="editBillStatus"
+                            name="status"
+                            required>
+
+                        <option value="Unpaid">
+                            Unpaid
+                        </option>
+
+                        <option value="Paid">
+                            Paid
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeEditBillModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
