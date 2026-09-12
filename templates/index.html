@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - WellSpring Hospital</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✚</div>
+
+            <div>
+                <h2>WellSpring</h2>
+                <span>Hospital Management</span>
+            </div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link active">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('doctors') }}"
+               class="nav-link">
+                <span class="nav-icon">⚕</span>
+                <span>Doctors</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}"
+               class="nav-link">
+                <span class="nav-icon">▣</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('billing') }}"
+               class="nav-link">
+                <span class="nav-icon">▤</span>
+                <span>Billing</span>
+            </a>
+
+            <a href="{{ url_for('search') }}"
+               class="nav-link">
+                <span class="nav-icon">⌕</span>
+                <span>Search</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-icon">
+                    A
+                </div>
+
+                <div class="profile-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Hospital overview and daily activities</p>
+            </div>
+
+
+            <div class="topbar-right">
+
+                <a href="{{ url_for('search') }}"
+                   class="top-search">
+                    <span>⌕</span>
+                    <span>Search</span>
+                </a>
+
+                <div class="admin-badge">
+                    <span class="online-dot"></span>
+                    Admin
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             WELCOME SECTION
+        ========================== -->
+
+        <section class="welcome-section">
+
+            <div class="welcome-content">
+
+                <span class="welcome-label">
+                    WELLSPRING HOSPITAL
+                </span>
+
+                <h2>
+                    Good day, Admin! 👋
+                </h2>
+
+                <p>
+                    Welcome to WellSpring Hospital
+                </p>
+
+                <small>
+                    Your central place for managing hospital records
+                    and activities.
+                </small>
+
+            </div>
+
+            <div class="welcome-icon">
+                ✚
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL PATIENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon patients-icon">
+                        ♙
+                    </div>
+
+                    <span class="stat-label">
+                        TOTAL PATIENTS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ total_patients }}
+                </h3>
+
+                <p>
+                    Registered patients
+                </p>
+
+            </div>
+
+
+            <!-- TOTAL DOCTORS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon doctors-icon">
+                        ⚕
+                    </div>
+
+                    <span class="stat-label">
+                        TOTAL DOCTORS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ total_doctors }}
+                </h3>
+
+                <p>
+                    Medical professionals
+                </p>
+
+            </div>
+
+
+            <!-- TOTAL APPOINTMENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon appointments-icon">
+                        ▣
+                    </div>
+
+                    <span class="stat-label">
+                        APPOINTMENTS
+                    </span>
+
+                </div>
+
+                <h3>
+                    {{ total_appointments }}
+                </h3>
+
+                <p>
+                    Total appointments
+                </p>
+
+            </div>
+
+
+            <!-- PAID REVENUE -->
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div class="stat-icon revenue-icon">
+                        ₹
+                    </div>
+
+                    <span class="stat-label">
+                        PAID REVENUE
+                    </span>
+
+                </div>
+
+                <h3>
+                    ₹{{ "%.2f"|format(total_revenue) }}
+                </h3>
+
+                <p>
+                    Total paid amount
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             RECENT APPOINTMENTS
+        ========================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Recent Appointments</h2>
+                    <p>Latest scheduled and cancelled appointments</p>
+                </div>
+
+                <a href="{{ url_for('appointments') }}"
+                   class="view-all-link">
+                    View All →
+                </a>
+
+            </div>
+
+
+            {% if recent_appointments %}
+
+            <div class="appointment-cards">
+
+
+                {% for appointment in recent_appointments %}
+
+                <div class="appointment-card">
+
+
+                    <div class="appointment-card-top">
+
+                        <div class="appointment-person">
+
+                            <div class="appointment-avatar">
+                                {{ appointment["patient_name"][0]|upper }}
+                            </div>
+
+                            <div>
+                                <h3>
+                                    {{ appointment["patient_name"] }}
+                                </h3>
+
+                                <p>
+                                    Dr. {{ appointment["doctor_name"] }}
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        {% if appointment["status"] == "Cancelled" %}
+
+                        <span class="status-badge status-cancelled">
+                            Cancelled
+                        </span>
+
+                        {% else %}
+
+                        <span class="status-badge status-scheduled">
+                            Scheduled
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="appointment-card-details">
+
+                        <div class="appointment-detail">
+
+                            <span class="detail-icon">
+                                ▣
+                            </span>
+
+                            <div>
+                                <small>Date</small>
+                                <strong>
+                                    {{ appointment["date"] }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="appointment-detail">
+
+                            <span class="detail-icon">
+                                ◷
+                            </span>
+
+                            <div>
+                                <small>Time</small>
+                                <strong>
+                                    {{ appointment["time"] }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="appointment-detail">
+
+                            <span class="detail-icon">
+                                ⚕
+                            </span>
+
+                            <div>
+                                <small>Department</small>
+                                <strong>
+                                    {{ appointment["department"] }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-dashboard">
+
+                <div class="empty-icon">
+                    ▣
+                </div>
+
+                <h3>No appointments yet</h3>
+
+                <p>
+                    Book an appointment to see it here.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- =========================
+             TODAY'S OVERVIEW
+        ========================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Today's Overview</h2>
+                    <p>Quick view of today's hospital activity</p>
+                </div>
+
+            </div>
+
+
+            <div class="overview-grid">
+
+
+                <!-- TODAY'S APPOINTMENTS -->
+
+                <div class="overview-card">
+
+                    <div class="overview-icon">
+                        ▣
+                    </div>
+
+                    <div class="overview-info">
+
+                        <span>
+                            Today's Appointments
+                        </span>
+
+                        <strong>
+                            {{ today_appointments }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AVAILABLE DOCTORS -->
+
+                <div class="overview-card">
+
+                    <div class="overview-icon">
+                        ⚕
+                    </div>
+
+                    <div class="overview-info">
+
+                        <span>
+                            Available Doctors
+                        </span>
+
+                        <strong>
+                            {{ available_doctors }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- UNPAID BILLS -->
+
+                <div class="overview-card">
+
+                    <div class="overview-icon">
+                        ₹
+                    </div>
+
+                    <div class="overview-info">
+
+                        <span>
+                            Unpaid Bills
+                        </span>
+
+                        <strong>
+                            {{ unpaid_bills }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CANCELLED APPOINTMENTS -->
+
+                <div class="overview-card">
+
+                    <div class="overview-icon">
+                        !
+                    </div>
+
+                    <div class="overview-info">
+
+                        <span>
+                            Cancelled Appointments
+                        </span>
+
+                        <strong>
+                            {{ cancelled_appointments }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <section class="dashboard-section quick-actions-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Quick Actions</h2>
+                    <p>Access common hospital tasks quickly</p>
+                </div>
+
+            </div>
+
+
+            <div class="quick-actions-grid">
+
+
+                <a href="{{ url_for('patients') }}"
+                   class="quick-action-card">
+
+                    <span class="quick-action-icon">
+                        +
+                    </span>
+
+                    <span>
+                        Add Patient
+                    </span>
+
+                </a>
+
+
+                <a href="{{ url_for('doctors') }}"
+                   class="quick-action-card">
+
+                    <span class="quick-action-icon">
+                        +
+                    </span>
+
+                    <span>
+                        Add Doctor
+                    </span>
+
+                </a>
+
+
+                <a href="{{ url_for('appointments') }}"
+                   class="quick-action-card">
+
+                    <span class="quick-action-icon">
+                        +
+                    </span>
+
+                    <span>
+                        Book Appointment
+                    </span>
+
+                </a>
+
+
+                <a href="{{ url_for('billing') }}"
+                   class="quick-action-card">
+
+                    <span class="quick-action-icon">
+                        ₹
+                    </span>
+
+                    <span>
+                        Create Bill
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+  </html>
