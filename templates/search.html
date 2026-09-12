@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Search - WellSpring Hospital</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✚</div>
+
+            <div>
+                <h2>WellSpring</h2>
+                <span>Hospital Management</span>
+            </div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('doctors') }}"
+               class="nav-link">
+                <span class="nav-icon">⚕</span>
+                <span>Doctors</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}"
+               class="nav-link">
+                <span class="nav-icon">▣</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('billing') }}"
+               class="nav-link">
+                <span class="nav-icon">▤</span>
+                <span>Billing</span>
+            </a>
+
+            <a href="{{ url_for('search') }}"
+               class="nav-link active">
+                <span class="nav-icon">⌕</span>
+                <span>Search</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-icon">
+                    A
+                </div>
+
+                <div class="profile-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Search</h1>
+                <p>Find patients, doctors, appointments and billing records</p>
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="admin-badge">
+                    <span class="online-dot"></span>
+                    Admin
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             SEARCH AREA
+        ========================== -->
+
+        <section class="search-page-section">
+
+            <div class="search-intro">
+
+                <div class="search-intro-icon">
+                    ⌕
+                </div>
+
+                <div>
+
+                    <h2>Search Hospital Records</h2>
+
+                    <p>
+                        Search across all hospital records using a name,
+                        phone number, department, treatment or status.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form method="GET"
+                  action="{{ url_for('search') }}"
+                  class="global-search-form">
+
+                <div class="global-search-box">
+
+                    <span class="global-search-icon">
+                        ⌕
+                    </span>
+
+                    <input type="text"
+                           id="globalSearch"
+                           name="q"
+                           value="{{ query }}"
+                           placeholder="Search patients, doctors, appointments or bills..."
+                           autocomplete="off">
+
+                    {% if query %}
+
+                    <button type="button"
+                            class="clear-search-btn"
+                            onclick="clearGlobalSearch()"
+                            title="Clear search">
+                        ×
+                    </button>
+
+                    {% endif %}
+
+                </div>
+
+
+                <button type="submit"
+                        class="primary-btn">
+                    Search
+                </button>
+
+            </form>
+
+
+            <!-- SEARCH STATUS -->
+
+            {% if query %}
+
+            <div class="search-result-info">
+
+                <span>
+                    Search results for:
+                </span>
+
+                <strong>
+                    "{{ query }}"
+                </strong>
+
+            </div>
+
+            {% else %}
+
+            <div class="search-result-info">
+
+                <span>
+                    Showing all available records
+                </span>
+
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+        <!-- ==================================================
+             PATIENT RESULTS
+        ================================================== -->
+
+        <section class="table-section search-result-section">
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <div>
+                        <h2>Patients</h2>
+
+                        <span class="record-count">
+                            {{ patients|length }} records
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% if patients %}
+
+            <div class="table-container">
+
+                <table class="search-results-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Blood Group</th>
+                            <th>Department</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for patient in patients %}
+
+                        <tr>
+
+                            <td>
+                                <span class="id-badge">
+                                    #{{ patient["id"] }}
+                                </span>
+                            </td>
+
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ patient["name"][0]|upper }}
+                                    </div>
+
+                                    <strong>
+                                        {{ patient["name"] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ patient["age"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ patient["gender"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ patient["phone"] or "-" }}
+                            </td>
+
+
+                            <td>
+
+                                {% if patient["blood_group"] %}
+
+                                <span class="blood-badge">
+                                    {{ patient["blood_group"] }}
+                                </span>
+
+                                {% else %}
+
+                                -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if patient["department"] %}
+
+                                <span class="department-badge">
+                                    {{ patient["department"] }}
+                                </span>
+
+                                {% else %}
+
+                                -
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ♙
+                </div>
+
+                <h3>No patients found</h3>
+
+                <p>
+                    No patient record matches your search.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ==================================================
+             DOCTOR RESULTS
+        ================================================== -->
+
+        <section class="table-section search-result-section">
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <div>
+                        <h2>Doctors</h2>
+
+                        <span class="record-count">
+                            {{ doctors|length }} records
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% if doctors %}
+
+            <div class="table-container">
+
+                <table class="search-results-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Doctor</th>
+                            <th>Specialization</th>
+                            <th>Experience</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for doctor in doctors %}
+
+                        <tr>
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ doctor["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar doctor-avatar">
+                                        {{ doctor["name"][0]|upper }}
+                                    </div>
+
+                                    <strong>
+                                        {{ doctor["name"] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ doctor["specialization"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["experience"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["phone"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["email"] or "-" }}
+                            </td>
+
+
+                            <td>
+
+                                {% if doctor["status"] == "Available" %}
+
+                                <span class="status-badge status-scheduled">
+                                    Available
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge status-unpaid">
+                                    {{ doctor["status"] or "Unavailable" }}
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ⚕
+                </div>
+
+                <h3>No doctors found</h3>
+
+                <p>
+                    No doctor record matches your search.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ==================================================
+             APPOINTMENT RESULTS
+        ================================================== -->
+
+        <section class="table-section search-result-section">
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <div>
+                        <h2>Appointments</h2>
+
+                        <span class="record-count">
+                            {{ appointments|length }} records
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% if appointments %}
+
+            <div class="table-container">
+
+                <table class="search-results-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for appointment in appointments %}
+
+                        <tr>
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ appointment["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ appointment["patient_name"][0]|upper }}
+                                    </div>
+
+                                    <strong>
+                                        {{ appointment["patient_name"] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ appointment["doctor_name"] }}
+                            </td>
+
+
+                            <td>
+                                {{ appointment["date"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ appointment["time"] or "-" }}
+                            </td>
+
+
+                            <td>
+
+                                {% if appointment["department"] %}
+
+                                <span class="department-badge">
+                                    {{ appointment["department"] }}
+                                </span>
+
+                                {% else %}
+
+                                -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if appointment["status"] == "Cancelled" %}
+
+                                <span class="status-badge status-cancelled">
+                                    Cancelled
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge status-scheduled">
+                                    Scheduled
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ▣
+                </div>
+
+                <h3>No appointments found</h3>
+
+                <p>
+                    No appointment record matches your search.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ==================================================
+             BILLING RESULTS
+        ================================================== -->
+
+        <section class="table-section search-result-section">
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <div>
+                        <h2>Billing</h2>
+
+                        <span class="record-count">
+                            {{ bills|length }} records
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% if bills %}
+
+            <div class="table-container">
+
+                <table class="search-results-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Treatment</th>
+                            <th>Amount</th>
+                            <th>Bill Date</th>
+                            <th>Due Date</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for bill in bills %}
+
+                        <tr>
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ bill["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ bill["patient_name"][0]|upper }}
+                                    </div>
+
+                                    <strong>
+                                        {{ bill["patient_name"] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ bill["treatment"] or "-" }}
+                            </td>
+
+
+                            <td>
+
+                                <strong class="amount-text">
+                                    ₹{{ "%.2f"|format(bill["amount"] or 0) }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                {{ bill["date"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ bill["due_date"] or "-" }}
+                            </td>
+
+
+                            <td>
+                                {{ bill["payment_method"] or "-" }}
+                            </td>
+
+
+                            <td>
+
+                                {% if bill["status"] == "Paid" %}
+
+                                <span class="status-badge status-scheduled">
+                                    Paid
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge status-unpaid">
+                                    Unpaid
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ₹
+                </div>
+
+                <h3>No billing records found</h3>
+
+                <p>
+                    No billing record matches your search.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- =========================
+             NO RESULTS
+        ========================== -->
+
+        {% if query and not patients and not doctors and not appointments and not bills %}
+
+        <section class="no-search-results">
+
+            <div class="no-results-icon">
+                ⌕
+            </div>
+
+            <h2>No Results Found</h2>
+
+            <p>
+                We couldn't find any hospital records matching
+                "<strong>{{ query }}</strong>".
+            </p>
+
+            <button type="button"
+                    class="secondary-btn"
+                    onclick="clearGlobalSearch()">
+                Clear Search
+            </button>
+
+        </section>
+
+        {% endif %}
+
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
