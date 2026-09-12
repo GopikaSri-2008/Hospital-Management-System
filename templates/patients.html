@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patients - WellSpring Hospital</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✚</div>
+
+            <div>
+                <h2>WellSpring</h2>
+                <span>Hospital Management</span>
+            </div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-link">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link active">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('doctors') }}"
+               class="nav-link">
+                <span class="nav-icon">⚕</span>
+                <span>Doctors</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}"
+               class="nav-link">
+                <span class="nav-icon">▣</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('billing') }}"
+               class="nav-link">
+                <span class="nav-icon">▤</span>
+                <span>Billing</span>
+            </a>
+
+            <a href="{{ url_for('search') }}"
+               class="nav-link">
+                <span class="nav-icon">⌕</span>
+                <span>Search</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-icon">
+                    A
+                </div>
+
+                <div class="profile-info">
+                    <strong>Admin</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Patients</h1>
+                <p>Manage and view patient records</p>
+            </div>
+
+
+            <div class="topbar-right">
+
+                <a href="{{ url_for('search') }}"
+                   class="top-search">
+                    <span>⌕</span>
+                    <span>Search</span>
+                </a>
+
+                <div class="admin-badge">
+                    <span class="online-dot"></span>
+                    Admin
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             PAGE ACTIONS
+        ========================== -->
+
+        <section class="page-actions">
+
+            <div>
+                <h2>Patient Records</h2>
+
+                <p>
+                    Add, view, edit and manage patient information.
+                </p>
+            </div>
+
+
+            <button type="button"
+                    class="primary-btn"
+                    onclick="openAddPatientModal()">
+
+                <span>+</span>
+                Add Patient
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             PATIENT TABLE
+        ========================== -->
+
+        <section class="table-section">
+
+
+            <div class="table-toolbar">
+
+                <div class="table-title">
+
+                    <h2>All Patients</h2>
+
+                    <span class="record-count">
+                        {{ patients|length }} records
+                    </span>
+
+                </div>
+
+
+                <div class="table-search">
+
+                    <span>⌕</span>
+
+                    <input type="text"
+                           id="patientSearch"
+                           placeholder="Search patients..."
+                           onkeyup="filterPatients()">
+
+                </div>
+
+            </div>
+
+
+            {% if patients %}
+
+            <div class="table-container">
+
+                <table id="patientsTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Blood Group</th>
+                            <th>Department</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for patient in patients %}
+
+                        <tr>
+
+
+                            <!-- ID -->
+
+                            <td>
+
+                                <span class="id-badge">
+                                    #{{ patient["id"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT -->
+
+                            <td>
+
+                                <div class="person-cell">
+
+                                    <div class="table-avatar">
+                                        {{ patient["name"][0]|upper }}
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            {{ patient["name"] }}
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- AGE -->
+
+                            <td>
+                                {{ patient["age"] }}
+                            </td>
+
+
+                            <!-- GENDER -->
+
+                            <td>
+                                {{ patient["gender"] }}
+                            </td>
+
+
+                            <!-- PHONE -->
+
+                            <td>
+                                {{ patient["phone"] }}
+                            </td>
+
+
+                            <!-- BLOOD GROUP -->
+
+                            <td>
+
+                                <span class="blood-badge">
+                                    {{ patient["blood_group"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- DEPARTMENT -->
+
+                            <td>
+
+                                <span class="department-badge">
+                                    {{ patient["department"] }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <div class="action-buttons">
+
+
+                                    <!-- VIEW -->
+
+                                    <button type="button"
+                                            class="icon-btn view-btn"
+                                            title="View"
+                                            onclick='viewPatient(
+                                                {{ patient["id"]|tojson }},
+                                                {{ patient["name"]|tojson }},
+                                                {{ patient["age"]|tojson }},
+                                                {{ patient["gender"]|tojson }},
+                                                {{ patient["phone"]|tojson }},
+                                                {{ patient["blood_group"]|tojson }},
+                                                {{ patient["department"]|tojson }},
+                                                {{ patient["address"]|tojson }}
+                                            )'>
+
+                                        👁
+
+                                    </button>
+
+
+                                    <!-- EDIT -->
+
+                                    <button type="button"
+                                            class="icon-btn edit-btn"
+                                            title="Edit"
+                                            onclick='editPatient(
+                                                {{ patient["id"]|tojson }},
+                                                {{ patient["name"]|tojson }},
+                                                {{ patient["age"]|tojson }},
+                                                {{ patient["gender"]|tojson }},
+                                                {{ patient["phone"]|tojson }},
+                                                {{ patient["blood_group"]|tojson }},
+                                                {{ patient["department"]|tojson }},
+                                                {{ patient["address"]|tojson }}
+                                            )'>
+
+                                        ✎
+
+                                    </button>
+
+
+                                    <!-- DELETE -->
+
+                                    <button type="button"
+                                            class="icon-btn delete-btn"
+                                            title="Delete"
+                                            onclick='confirmDeletePatient(
+                                                {{ patient["id"]|tojson }},
+                                                {{ patient["name"]|tojson }}
+                                            )'>
+
+                                        🗑
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-table">
+
+                <div class="empty-icon">
+                    ♙
+                </div>
+
+                <h3>No patients found</h3>
+
+                <p>
+                    Add your first patient to get started.
+                </p>
+
+                <button type="button"
+                        class="primary-btn"
+                        onclick="openAddPatientModal()">
+
+                    + Add Patient
+
+                </button>
+
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ==================================================
+     ADD PATIENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="addPatientModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add New Patient</h2>
+                <p>Enter patient information</p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeAddPatientModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              action="{{ url_for('patients') }}">
+
+
+            <div class="form-grid">
+
+
+                <!-- NAME -->
+
+                <div class="form-group full-width">
+
+                    <label for="patientName">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="patientName"
+                           name="name"
+                           placeholder="Enter patient name"
+                           required>
+
+                </div>
+
+
+                <!-- AGE -->
+
+                <div class="form-group">
+
+                    <label for="patientAge">
+                        Age
+                    </label>
+
+                    <input type="number"
+                           id="patientAge"
+                           name="age"
+                           placeholder="Enter age"
+                           min="0"
+                           required>
+
+                </div>
+
+
+                <!-- GENDER -->
+
+                <div class="form-group">
+
+                    <label for="patientGender">
+                        Gender
+                    </label>
+
+                    <select id="patientGender"
+                            name="gender"
+                            required>
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="patientPhone">
+                        Phone
+                    </label>
+
+                    <input type="tel"
+                           id="patientPhone"
+                           name="phone"
+                           placeholder="Enter phone number"
+                           required>
+
+                </div>
+
+
+                <!-- BLOOD GROUP -->
+
+                <div class="form-group">
+
+                    <label for="patientBloodGroup">
+                        Blood Group
+                    </label>
+
+                    <select id="patientBloodGroup"
+                            name="blood_group"
+                            required>
+
+                        <option value="">
+                            Select blood group
+                        </option>
+
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="form-group">
+
+                    <label for="patientDepartment">
+                        Department
+                    </label>
+
+                    <select id="patientDepartment"
+                            name="department"
+                            required>
+
+                        <option value="">
+                            Select department
+                        </option>
+
+                        <option value="General Medicine">
+                            General Medicine
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Orthopedics">
+                            Orthopedics
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="Emergency">
+                            Emergency
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="form-group full-width">
+
+                    <label for="patientAddress">
+                        Address
+                    </label>
+
+                    <textarea id="patientAddress"
+                              name="address"
+                              rows="3"
+                              placeholder="Enter patient address"></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeAddPatientModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Add Patient
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     VIEW PATIENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="viewPatientModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Patient Details</h2>
+                <p>Complete patient information</p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeViewPatientModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="appointment-view-header">
+
+            <div class="large-avatar"
+                 id="viewPatientAvatar">
+                P
+            </div>
+
+            <div>
+
+                <h2 id="viewPatientName">
+                    Patient Name
+                </h2>
+
+                <span class="id-badge"
+                      id="viewPatientId">
+                    #1
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span>Age</span>
+
+                <strong id="viewPatientAge">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Gender</span>
+
+                <strong id="viewPatientGender">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Phone</span>
+
+                <strong id="viewPatientPhone">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Blood Group</span>
+
+                <strong id="viewPatientBloodGroup">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>Department</span>
+
+                <strong id="viewPatientDepartment">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item full-width">
+
+                <span>Address</span>
+
+                <strong id="viewPatientAddress">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button type="button"
+                    class="secondary-btn"
+                    onclick="closeViewPatientModal()">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     EDIT PATIENT MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="editPatientModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Edit Patient</h2>
+                <p>Update patient information</p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeEditPatientModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST"
+              id="editPatientForm">
+
+
+            <div class="form-grid">
+
+
+                <!-- NAME -->
+
+                <div class="form-group full-width">
+
+                    <label for="editPatientName">
+                        Patient Name
+                    </label>
+
+                    <input type="text"
+                           id="editPatientName"
+                           name="name"
+                           required>
+
+                </div>
+
+
+                <!-- AGE -->
+
+                <div class="form-group">
+
+                    <label for="editPatientAge">
+                        Age
+                    </label>
+
+                    <input type="number"
+                           id="editPatientAge"
+                           name="age"
+                           min="0"
+                           required>
+
+                </div>
+
+
+                <!-- GENDER -->
+
+                <div class="form-group">
+
+                    <label for="editPatientGender">
+                        Gender
+                    </label>
+
+                    <select id="editPatientGender"
+                            name="gender"
+                            required>
+
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="editPatientPhone">
+                        Phone
+                    </label>
+
+                    <input type="tel"
+                           id="editPatientPhone"
+                           name="phone"
+                           required>
+
+                </div>
+
+
+                <!-- BLOOD GROUP -->
+
+                <div class="form-group">
+
+                    <label for="editPatientBloodGroup">
+                        Blood Group
+                    </label>
+
+                    <select id="editPatientBloodGroup"
+                            name="blood_group"
+                            required>
+
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="form-group">
+
+                    <label for="editPatientDepartment">
+                        Department
+                    </label>
+
+                    <select id="editPatientDepartment"
+                            name="department"
+                            required>
+
+                        <option value="General Medicine">
+                            General Medicine
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Orthopedics">
+                            Orthopedics
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="Emergency">
+                            Emergency
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="form-group full-width">
+
+                    <label for="editPatientAddress">
+                        Address
+                    </label>
+
+                    <textarea id="editPatientAddress"
+                              name="address"
+                              rows="3"></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeEditPatientModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-btn">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     DELETE CONFIRMATION MODAL
+================================================== -->
+
+<div class="modal-overlay"
+     id="deletePatientModal">
+
+    <div class="modal small-modal">
+
+
+        <div class="confirm-content">
+
+            <div class="confirm-icon">
+                !
+            </div>
+
+            <h2>Delete Patient?</h2>
+
+            <p>
+                Are you sure you want to delete
+                <strong id="deletePatientName"></strong>?
+            </p>
+
+            <p class="warning-text">
+                This action cannot be undone.
+            </p>
+
+
+            <form method="POST"
+                  id="deletePatientForm">
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="secondary-btn"
+                            onclick="closeDeletePatientModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="danger-btn">
+                        Delete Patient
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
